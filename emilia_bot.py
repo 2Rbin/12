@@ -264,7 +264,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # === /message ===
 async def send_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text
+    await update.message.reply_text()
     text = generate_message()
     weather = get_weather()
     await update.message.reply_text(f"{text}\n\n{weather}")
