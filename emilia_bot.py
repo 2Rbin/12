@@ -5,8 +5,8 @@ from telegram import Update
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # === НАЛАШТУВАННЯ ===
-TELEGRAM_TOKEN = "8834903933:AAEZzduAbyXKYU_tL0OPWPigaiQpYr5GJIg"
-GEMINI_API_KEY = "AIzaSyDrhVdeDAHTDBXldb-GN1WdBj0P8MVOrS4"
+TELEGRAM_TOKEN = ""
+GEMINI_API_KEY = ""
 
 EMILIA_CHAT_ID = None
 
