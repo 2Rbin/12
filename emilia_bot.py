@@ -446,7 +446,7 @@ async def main():
 
     print("Бот Емілії запущено ✅")
     await app.initialize()
-    await app.start()
+    await app.updater.start_polling(drop_pending_updates=True)
     await app.updater.start_polling()
     await asyncio.Event().wait()
 
