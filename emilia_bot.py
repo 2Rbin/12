@@ -91,9 +91,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await app_ref.bot.set_my_commands([
         ("start", "🌸 Запустити бота"),
         ("message", "💌 Отримати повідомлення зараз"),
-        ("порада", "💡 Отримати пораду"),
-        ("настрій", "🎵 Підбадьорення під настрій"),
-        ("тиждень", "📅 План на тиждень"),
+        ("porada", "💡 Отримати пораду"),
+("nastrii", "🎵 Підбадьорення під настрій"),
+("tyzhden", "📅 План на тиждень"),
     ])
 
 # === /message ===
