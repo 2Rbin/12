@@ -444,11 +444,13 @@ async def main():
 
     scheduler.start()
 
-    print("Бот Емілії запущено ✅")
-    await app.initialize()
-    await app.updater.start_polling(drop_pending_updates=True)
-    await app.updater.start_polling()
-    await asyncio.Event().wait()
+   print("Бот Емілії запущено ✅")
+    async with app:
+        await app.start()
+        await app.updater.start_polling(drop_pending_updates=True)
+        await asyncio.Event().wait()
+        await app.updater.stop()
+        await app.stop()
 
 if __name__ == "__main__":
     asyncio.run(main())
