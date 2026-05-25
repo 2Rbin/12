@@ -26,13 +26,17 @@ def ask_gemini(prompt):
 
 # === ПОГОДА ===
 def get_weather():
-    url = f"http://api.openweathermap.org/data/2.5/weather?q=Kyiv&appid={WEATHER_API_KEY}&units=metric&lang=ua"
-    r = requests.get(url).json()
-    temp = round(r["main"]["temp"])
-    desc = r["weather"][0]["description"]
-    feels = round(r["main"]["feels_like"])
-    return f"🌦 Погода в Києві: {temp}°C, {desc}, відчувається як {feels}°C"
-
+    try:
+        url = f"http://api.openweathermap.org/data/2.5/weather?q=Kyiv&appid={WEATHER_API_KEY}&units=metric&lang=ua"
+        r = requests.get(url).json()
+        if "main" not in r:
+            return "🌦 Погода тимчасово недоступна"
+        temp = round(r["main"]["temp"])
+        desc = r["weather"][0]["description"]
+        feels = round(r["main"]["feels_like"])
+        return f"🌦 Погода в Києві: {temp}°C, {desc}, відчувається як {feels}°C"
+    except:
+        return "🌦 Погода тимчасово недоступна"
 # === РАНКОВЕ ПОВІДОМЛЕННЯ ===
 def generate_morning_message():
     import random
