@@ -16,6 +16,8 @@ EMILIA_CHAT_ID = None
 WAITING_MOOD = False
 BAD_MOOD_CHAT = False
 RANDOM_CHAT = False
+ADMIN_ID = 1290247650
+USERS_DB = {}
 app_ref = None
 
 # === ПРИВІТАННЯ ===
@@ -180,7 +182,7 @@ CHECK_IN_QUESTIONS = [
     "Як настрій сьогодні? 🌈",
     "Гей, сонечко! ☀️ Як справи?",
     "Привіт! 🌺 Що нового?",
-    "Як ти там? 💝 Думала про тебе!",
+    "Як ти там? 💝 Думаю про тебе!",
     "Привіт! 🎀 Як проходить день?",
     "Гей! 🌟 Що цікавого сьогодні?",
     "Привіт, зірочко! ⭐ Як ти?",
@@ -254,6 +256,7 @@ def generate_evening_message():
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global EMILIA_CHAT_ID
     EMILIA_CHAT_ID = update.effective_chat.id
+    USERS_DB[update.effective_chat.id] = update.effective_user.username or update.effective_user.first_name
     await update.message.reply_text(
         "Привіт, Емілія! 🌸\n"
         "Я твій особистий бот 💌\n"
@@ -305,6 +308,19 @@ async def week_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     result = ask_gemini(prompt)
     await update.message.reply_text(result or plan)
+
+# === /users ===
+async def users_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id != ADMIN_ID:
+        await update.message.reply_text("⛔ Немає доступу")
+        return
+    if not USERS_DB:
+        await update.message.reply_text("Поки ніхто не використовував бота")
+        return
+    text = "👥 Користувачі бота:\n\n"
+    for uid, name in USERS_DB.items():
+        text += f"• {name} (ID: {uid})\n"
+    await update.message.reply_text(text)
 
 # === ОБРОБКА ПОВІДОМЛЕНЬ ===
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -401,6 +417,7 @@ async def main():
     app.add_handler(CommandHandler("nastrii", mood))
     app.add_handler(CommandHandler("tyzhden", week_plan))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(CommandHandler("users", users_cmd))
 
     await app.bot.set_my_commands([
         ("start", "🌸 Запустити бота"),
