@@ -257,14 +257,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Привіт, Емілія! 🌸\n"
         "Я твій особистий бот 💌\n"
-        "Щоранку о 09:00 — особливе повідомлення ✨\n"
-        "Щовечора о 21:00 — побажання на ніч 🌙\n"
+        "Щоранку — особливе повідомлення ✨\n"
+        "Щовечора — побажання на ніч 🌙\n"
         "І інколи буду просто писати щоб дізнатись як ти 💛"
     )
 
 # === /message ===
 async def send_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Генерую для тебе повідомлення... ✨")
+    await update.message.reply_text
     text = generate_message()
     weather = get_weather()
     await update.message.reply_text(f"{text}\n\n{weather}")
