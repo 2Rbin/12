@@ -444,7 +444,7 @@ async def main():
 
     scheduler.start()
 
-   print("Бот Емілії запущено ✅")
+    print("Бот Емілії запущено ✅")
     async with app:
         await app.start()
         await app.updater.start_polling(drop_pending_updates=True)
