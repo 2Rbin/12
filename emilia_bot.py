@@ -20,7 +20,6 @@ ADMIN_ID = 1290247650
 USERS_DB = {}
 app_ref = None
 
-# === ПРИВІТАННЯ ===
 def get_greeting():
     hour = datetime.now().hour
     if 5 <= hour < 12:
@@ -30,7 +29,6 @@ def get_greeting():
     else:
         return "Доброго вечора"
 
-# === 100+ КОМПЛІМЕНТІВ ===
 COMPLIMENTS = [
     "Ти неймовірна і особлива ✨", "Твоя посмішка освітлює весь світ 🌟",
     "Ти найкраща і найяскравіша 🌸", "Твоя доброта надихає всіх навколо 💛",
@@ -82,7 +80,6 @@ COMPLIMENTS = [
     "Твоя присутність змінює атмосферу 🌤️", "Ти вмієш любити щиро і глибоко ❤️‍🔥",
 ]
 
-# === 100+ ПОРАД ===
 DAILY_TIPS = [
     "💧 Випий склянку води одразу після пробудження",
     "🚶 Пройди 10 хвилин пішки після їжі",
@@ -136,7 +133,6 @@ DAILY_TIPS = [
     "🎬 Подивись надихаючий фільм увечері",
 ]
 
-# === МОТИВАЦІЯ ===
 MOTIVATION = [
     "🌟 Ти здатна на більше ніж думаєш!",
     "💪 Кожен маленький крок — це перемога!",
@@ -160,7 +156,6 @@ MOTIVATION = [
     "🎵 Твоє серце знає правильний ритм!",
 ]
 
-# === ПЛАНИ НА ТИЖДЕНЬ ===
 WEEK_ACTIVITIES = {
     "Понеділок": ["медитація 10 хвилин", "прогулянка на свіжому повітрі", "читання книги", "приготування корисної страви", "планування тижня"],
     "Вівторок": ["йога або розтяжка", "дзвінок близькій людині", "вивчення нового рецепту", "перегляд надихаючого фільму", "малювання або творчість"],
@@ -171,7 +166,6 @@ WEEK_ACTIVITIES = {
     "Неділя": ["повільний ранок", "підготовка до нового тижня", "улюблена музика", "вдячність за тиждень", "рання нічна рутина"],
 }
 
-# === ПИТАННЯ ДЛЯ РАНДОМНОГО CHECK-IN ===
 CHECK_IN_QUESTIONS = [
     "Привіт! 🌸 Як ти сьогодні?",
     "Гей, Емілія! 💛 Як справи?",
@@ -190,7 +184,6 @@ CHECK_IN_QUESTIONS = [
     "Гей! 💫 Що робиш гарного?",
 ]
 
-# === GEMINI ЗАПИТ ===
 def ask_gemini(prompt):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
     data = {"contents": [{"parts": [{"text": prompt}]}]}
@@ -200,7 +193,6 @@ def ask_gemini(prompt):
         return None
     return result["candidates"][0]["content"]["parts"][0]["text"]
 
-# === ПОГОДА ===
 def get_weather():
     try:
         url = f"http://api.openweathermap.org/data/2.5/weather?q=Kyiv&appid={WEATHER_API_KEY}&units=metric&lang=ua"
@@ -214,7 +206,6 @@ def get_weather():
     except:
         return "🌦 Погода тимчасово недоступна"
 
-# === ГЕНЕРАЦІЯ ПОВІДОМЛЕННЯ ===
 def generate_message():
     greeting = get_greeting()
     themes = [
@@ -241,7 +232,6 @@ def generate_message():
         return f"🌸 {greeting}, Емілія! {random.choice(COMPLIMENTS)}"
     return result
 
-# === ВЕЧІРНЄ ПОВІДОМЛЕННЯ ===
 def generate_evening_message():
     prompt = (
         "Ти ніжний бот для дівчини на ім'я Емілія. "
@@ -252,11 +242,18 @@ def generate_evening_message():
     result = ask_gemini(prompt)
     return result or "🌙 На добраніч, Емілія! Ти сьогодні була чудовою 💫 Солодких снів!"
 
-# === /start ===
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global EMILIA_CHAT_ID
     EMILIA_CHAT_ID = update.effective_chat.id
     USERS_DB[update.effective_chat.id] = update.effective_user.username or update.effective_user.first_name
+    user = update.effective_user
+    try:
+        await app_ref.bot.send_message(
+            chat_id=ADMIN_ID,
+            text=f"🆕 Новий користувач: {user.first_name} (@{user.username})\nID: {user.id}"
+        )
+    except:
+        pass
     await update.message.reply_text(
         "Привіт, Емілія! 🌸\n"
         "Я твій особистий бот 💌\n"
@@ -265,7 +262,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "І інколи буду просто писати щоб дізнатись як ти 💛"
     )
 
-# === /message ===
 async def send_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = generate_message()
     weather = get_weather()
@@ -273,11 +269,9 @@ async def send_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     with open("sticker.webm", "rb") as sticker:
         await update.message.reply_sticker(sticker)
 
-# === /pogoda ===
 async def weather_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(get_weather())
 
-# === /porada ===
 async def advice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tip = random.choice(DAILY_TIPS)
     prompt = (
@@ -287,7 +281,6 @@ async def advice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = ask_gemini(prompt)
     await update.message.reply_text(result or tip)
 
-# === /nastrii ===
 async def mood(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global WAITING_MOOD
     WAITING_MOOD = True
@@ -295,7 +288,6 @@ async def mood(update: Update, context: ContextTypes.DEFAULT_TYPE):
     markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
     await update.message.reply_text("Який у тебе зараз настрій? 🎵", reply_markup=markup)
 
-# === /tyzhden ===
 async def week_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Генерую план на тиждень... 📅")
     plan = "📅 Твій план на тиждень, Емілія:\n\n"
@@ -309,7 +301,6 @@ async def week_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = ask_gemini(prompt)
     await update.message.reply_text(result or plan)
 
-# === /users ===
 async def users_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id != ADMIN_ID:
         await update.message.reply_text("⛔ Немає доступу")
@@ -322,12 +313,21 @@ async def users_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"• {name} (ID: {uid})\n"
     await update.message.reply_text(text)
 
-# === ОБРОБКА ПОВІДОМЛЕНЬ ===
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global WAITING_MOOD, BAD_MOOD_CHAT, RANDOM_CHAT
     text = update.message.text
+    user = update.effective_user
 
-    # Рандомна розмова (check-in)
+    # Логування — надсилає тобі повідомлення
+    if update.effective_chat.id != ADMIN_ID:
+        try:
+            await app_ref.bot.send_message(
+                chat_id=ADMIN_ID,
+                text=f"👤 {user.first_name} (@{user.username})\n💬 {text}"
+            )
+        except:
+            pass
+
     if RANDOM_CHAT:
         RANDOM_CHAT = False
         prompt = (
@@ -339,7 +339,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(result or f"🌸 Дякую що поділилась! {random.choice(MOTIVATION)}")
         return
 
-    # Вибір настрою
     if WAITING_MOOD:
         WAITING_MOOD = False
         bad_moods = ["😔 Сумно", "😤 Злюся"]
@@ -370,7 +369,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         return
 
-    # Розмова при поганому настрої
     if BAD_MOOD_CHAT:
         prompt = (
             f"Ти підтримуєш дівчину Емілія у розмові. Вона написала: '{text}'. "
@@ -382,7 +380,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(result or "💙 Я тут поруч, не хвилюйся!")
         return
 
-# === ЩОДЕННІ ПОВІДОМЛЕННЯ ===
 async def daily_morning(app):
     if EMILIA_CHAT_ID:
         text = generate_message()
@@ -394,7 +391,6 @@ async def daily_evening(app):
         text = generate_evening_message()
         await app.bot.send_message(chat_id=EMILIA_CHAT_ID, text=text)
 
-# === РАНДОМНИЙ CHECK-IN ===
 async def random_check_in(app):
     global RANDOM_CHAT
     if EMILIA_CHAT_ID:
@@ -404,7 +400,6 @@ async def random_check_in(app):
             text=random.choice(CHECK_IN_QUESTIONS)
         )
 
-# === ЗАПУСК ===
 async def main():
     global app_ref
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
@@ -416,8 +411,8 @@ async def main():
     app.add_handler(CommandHandler("porada", advice))
     app.add_handler(CommandHandler("nastrii", mood))
     app.add_handler(CommandHandler("tyzhden", week_plan))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(CommandHandler("users", users_cmd))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     await app.bot.set_my_commands([
         ("start", "🌸 Запустити бота"),
@@ -432,7 +427,6 @@ async def main():
     scheduler.add_job(daily_morning, "cron", hour=9, minute=0, args=[app])
     scheduler.add_job(daily_evening, "cron", hour=21, minute=0, args=[app])
 
-    # Рандомний check-in 3 рази на день між 10 і 21
     hours = random.sample(range(10, 21), 3)
     for hour in hours:
         scheduler.add_job(
