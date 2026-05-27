@@ -12,7 +12,7 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 WEATHER_API_KEY = os.environ.get("WEATHER_API_KEY")
 
-EMILIA_CHAT_ID = None
+EMILIA_CHAT_ID = int(os.environ.get("EMILIA_CHAT_ID", 0)) or None
 WAITING_MOOD = False
 BAD_MOOD_CHAT = False
 RANDOM_CHAT = False
