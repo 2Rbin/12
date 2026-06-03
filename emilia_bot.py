@@ -427,7 +427,7 @@ async def main():
     scheduler.add_job(daily_morning, "cron", hour=9, minute=0, args=[app])
     scheduler.add_job(daily_evening, "cron", hour=21, minute=0, args=[app])
 
-    hours = random.sample(range(10, 21), 3)
+    hours = random.sample(range(10, 23), 3)
     for hour in hours:
         scheduler.add_job(
             random_check_in, "cron",
